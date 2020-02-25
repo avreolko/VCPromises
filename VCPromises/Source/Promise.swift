@@ -55,11 +55,6 @@ public class Promise<Value> {
         self.updateState(.fulfilled(value))
     }
 
-    @discardableResult
-    public func `catch`(_ reject: @escaping (Error) -> Void) -> Promise<Value> {
-        return self.then ({ _ in }, reject)
-    }
-
     internal func addCallbacks(_ fulfill: @escaping (Value) -> Void,
                                _ reject: @escaping (Error) -> Void) {
 
@@ -85,15 +80,10 @@ private extension Promise {
     }
 
     func fireIfCompleted(callbacks: [Callback<Value>]) {
-
-        guard let callback = callbacks.first else {
-            return
-        }
-
         switch self.state {
         case .pending: break
-        case .fulfilled(let value): callback.fulfill(value)
-        case .rejected(let error): callback.reject(error)
+        case .fulfilled(let value): callbacks.forEach { $0.fulfill(value) }
+        case .rejected(let error): callbacks.forEach { $0.reject(error) }
         }
     }
 }

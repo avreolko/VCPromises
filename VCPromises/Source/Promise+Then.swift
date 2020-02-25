@@ -46,4 +46,9 @@ extension Promise {
         self.addCallbacks(fullfill, { _ in })
         return self
     }
+
+    @discardableResult
+    public func `catch`(_ reject: @escaping (Error) -> Void) -> Promise<Value> {
+        return self.then ({ _ in }, reject)
+    }
 }
