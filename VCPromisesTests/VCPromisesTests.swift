@@ -11,6 +11,8 @@ import XCTest
 
 class VCPromisesTests: XCTestCase {
 
+    enum SomeError: Error { case foo }
+
     func test_multiple_thens() {
         let promise = Promise<Void>()
 
@@ -59,6 +61,59 @@ class VCPromisesTests: XCTestCase {
         }
 
         somePromise.fulfill(8)
+
+        waitForExpectations(timeout: 0.1, handler: nil)
+    }
+
+    func test_error_catch_after_reject() {
+
+        let promise = Promise<Int>()
+        promise.reject(SomeError.foo)
+
+        let expectation = self.expectation(description: "waiting for promise with error")
+        promise.catch { _ in
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 0.1, handler: nil)
+    }
+
+    func test_error_catch_before_reject() {
+        let promise = Promise<Int>()
+
+        let expectation = self.expectation(description: "waiting for promise with error")
+        promise.catch { _ in
+            expectation.fulfill()
+        }
+
+        promise.reject(SomeError.foo)
+
+        waitForExpectations(timeout: 0.1, handler: nil)
+    }
+
+    func test_then_before_fulfill() {
+        let promise = Promise<Int>()
+        promise.fulfill(3)
+
+        let expectation = self.expectation(description: "waiting for promise with success")
+        promise.then { value in
+            XCTAssertEqual(3, value)
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 0.1, handler: nil)
+    }
+
+    func test_then_after_fulfill() {
+        let promise = Promise<Int>()
+
+        let expectation = self.expectation(description: "waiting for promise with success")
+        promise.then { value in
+            XCTAssertEqual(5, value)
+            expectation.fulfill()
+        }
+
+        promise.fulfill(5)
 
         waitForExpectations(timeout: 0.1, handler: nil)
     }
