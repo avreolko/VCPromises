@@ -9,7 +9,7 @@
 import XCTest
 @testable import VCPromises
 
-class VCPromisesTests: XCTestCase {
+final class VCPromisesTests: XCTestCase {
 
     enum SomeError: Error { case foo }
 
@@ -70,7 +70,7 @@ class VCPromisesTests: XCTestCase {
         let promise = Promise<Int>()
         promise.reject(SomeError.foo)
 
-        let expectation = self.expectation(description: "waiting for promise with error")
+        let expectation = self.expectation(description: "waiting for promise with error after")
         promise.catch { _ in
             expectation.fulfill()
         }
@@ -81,7 +81,7 @@ class VCPromisesTests: XCTestCase {
     func test_error_catch_before_reject() {
         let promise = Promise<Int>()
 
-        let expectation = self.expectation(description: "waiting for promise with error")
+        let expectation = self.expectation(description: "waiting for promise with error before")
         promise.catch { _ in
             expectation.fulfill()
         }

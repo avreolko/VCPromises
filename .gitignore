@@ -1,0 +1,8 @@
+Tests/VCPromisesTests/.DS_Store
+.DS_Store
+.build
+.swiftpm/xcode/package.xcworkspace/xcuserdata/vcherepjanko.xcuserdatad/UserInterfaceState.xcuserstate
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+.swiftpm/xcode/xcshareddata/xcschemes/VCPromises.xcscheme
+.swiftpm/xcode/xcuserdata/vcherepjanko.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist
+.swiftpm/xcode/xcuserdata/vcherepjanko.xcuserdatad/xcschemes/xcschememanagement.plist
