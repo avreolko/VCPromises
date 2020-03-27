@@ -95,7 +95,7 @@ final class VCPromisesTests: XCTestCase {
         let promise = Promise<Int>()
         promise.fulfill(3)
 
-        let expectation = self.expectation(description: "waiting for promise with success")
+        let expectation = self.expectation(description: "waiting for promise that already fulfilled")
         promise.then { value in
             XCTAssertEqual(3, value)
             expectation.fulfill()
@@ -107,7 +107,7 @@ final class VCPromisesTests: XCTestCase {
     func test_then_after_fulfill() {
         let promise = Promise<Int>()
 
-        let expectation = self.expectation(description: "waiting for promise with success")
+        let expectation = self.expectation(description: "waiting for promise that not yet fulfilled")
         promise.then { value in
             XCTAssertEqual(5, value)
             expectation.fulfill()
@@ -115,6 +115,33 @@ final class VCPromisesTests: XCTestCase {
 
         promise.fulfill(5)
 
+        waitForExpectations(timeout: 0.1, handler: nil)
+    }
+
+    func test_success() {
+        let promise = Promise<Success>()
+
+        let expectation = self.expectation(description: "waiting for promise with success")
+        promise.then {
+            expectation.fulfill()
+        }
+
+        promise.fulfill()
+        waitForExpectations(timeout: 0.1, handler: nil)
+    }
+
+    func test_success_map() {
+        let promise = Promise<Success>()
+
+        let expectation = self.expectation(description: "waiting for promise with success")
+        promise.thenMap {
+            return 5
+        }.then { value in
+            XCTAssertEqual(5, value)
+            expectation.fulfill()
+        }
+
+        promise.fulfill()
         waitForExpectations(timeout: 0.1, handler: nil)
     }
 }
