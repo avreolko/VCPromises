@@ -117,31 +117,4 @@ final class VCPromisesTests: XCTestCase {
 
         waitForExpectations(timeout: 0.1, handler: nil)
     }
-
-    func test_success() {
-        let promise = Promise<Success>()
-
-        let expectation = self.expectation(description: "waiting for promise with success")
-        promise.then {
-            expectation.fulfill()
-        }
-
-        promise.fulfill()
-        waitForExpectations(timeout: 0.1, handler: nil)
-    }
-
-    func test_success_map() {
-        let promise = Promise<Success>()
-
-        let expectation = self.expectation(description: "waiting for promise with success")
-        promise.thenMap {
-            return 5
-        }.then { value in
-            XCTAssertEqual(5, value)
-            expectation.fulfill()
-        }
-
-        promise.fulfill()
-        waitForExpectations(timeout: 0.1, handler: nil)
-    }
 }

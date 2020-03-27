@@ -25,9 +25,9 @@ let package = Package(
             name: "VCPromises",
             dependencies: [],
             path: "Sources"),
-		.testTarget(
-			name: "VCPromisesTests",
-			dependencies: ["VCPromises"],
-			path: "Tests"),
+        .testTarget(
+            name: "VCPromisesTests",
+            dependencies: ["VCPromises"],
+            path: "Tests"),
     ]
 )
