@@ -1,8 +1,8 @@
 # VCPromises
-Basic implementation of the Promise pattern in Swift. 
-
-## How to get started
-Just look on tests.
+A basic implementation of the Promise pattern in Swift
 
 ## Installation
-For now VCPromises supports installation through SPM 📦
+Install with SPM 📦
+
+## Usage
+See `/Tests/VCPromisesTests.swift` for usage examples
