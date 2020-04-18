@@ -94,8 +94,8 @@ final class PromiseZipTests: XCTestCase {
         let expectation = self.expectation(description: "waiting for promise that not yet fulfilled")
 
         mainPromise
-            .zip(with: otherPromise, on: otherQueue)
-            .then { _ in
+            .zip(with: otherPromise)
+            .then(on: otherQueue) { _ in
                 expectation.fulfill()
 
                 let name = __dispatch_queue_get_label(nil)

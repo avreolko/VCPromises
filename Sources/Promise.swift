@@ -4,8 +4,26 @@ public typealias Success<T> = (T) -> Void
 public typealias Failure = (Error) -> Void
 
 struct Callback<Value> {
-    let fulfill: Success<Value>
-    let reject: Failure
+    private let fulfill: Success<Value>
+    private let reject: Failure
+    private let queue: DispatchQueue
+
+    init(fulfill: @escaping Success<Value>,
+         reject: @escaping Failure,
+         queue: DispatchQueue) {
+
+        self.fulfill = fulfill
+        self.reject = reject
+        self.queue = queue
+    }
+
+    func fulfill(with value: Value) {
+        self.queue.async { self.fulfill(value) }
+    }
+
+    func reject(with error: Error) {
+        self.queue.async { self.reject(error) }
+    }
 }
 
 public class Promise<Value> {
@@ -20,26 +38,21 @@ public class Promise<Value> {
 
     private var state: State<Value>
 
-    let queue: DispatchQueue
-
-    public init(queue: DispatchQueue = .main) {
+    public init() {
         self.state = .pending([])
-        self.queue = queue
     }
 
-    public init(value: Value, queue: DispatchQueue = .main) {
+    public init(value: Value) {
         self.state = .fulfilled(value)
-        self.queue = queue
     }
 
-    public init(error: Error, queue: DispatchQueue = .main) {
+    public init(error: Error) {
         self.state = .rejected(error)
-        self.queue = queue
     }
 
-    public convenience init(_ work: @escaping Work, on queue: DispatchQueue = .main) {
+    public convenience init(_ work: @escaping Work, on queue: DispatchQueue = .global(qos: .userInitiated)) {
 
-        self.init(queue: queue)
+        self.init()
 
         queue.async {
             do {
@@ -59,17 +72,18 @@ public class Promise<Value> {
     }
 
     internal func addCallbacks(_ fulfill: @escaping Success<Value>,
-                               _ reject: @escaping Failure) {
+                               _ reject: @escaping Failure,
+                               _ queue: DispatchQueue) {
 
-        let callback = Callback(fulfill: fulfill, reject: reject)
+        let callback = Callback(fulfill: fulfill, reject: reject, queue: queue)
 
         switch self.state {
         case .pending(let callbacks):
             self.state = .pending(callbacks + [callback])
         case .fulfilled(let value):
-            self.enqueue { callback.fulfill(value) }
+            callback.fulfill(with: value)
         case .rejected(let error):
-            self.enqueue { callback.reject(error) }
+            callback.reject(with: error)
         }
     }
 }
@@ -77,20 +91,15 @@ public class Promise<Value> {
 private extension Promise {
 
     func updateState(_ newState: State<Value>) {
+
         guard case .pending(let callbacks) = self.state else { return }
+
         self.state = newState
-        self.fireIfCompleted(callbacks: callbacks)
-    }
 
-    func fireIfCompleted(callbacks: [Callback<Value>]) {
-        switch self.state {
+        switch newState {
         case .pending: break
-        case .fulfilled(let value): self.enqueue { callbacks.forEach { $0.fulfill(value) } }
-        case .rejected(let error): self.enqueue { callbacks.forEach { $0.reject(error) } }
+        case .fulfilled(let value): callbacks.forEach { $0.fulfill(with: value) }
+        case .rejected(let error): callbacks.forEach { $0.reject(with: error) }
         }
-    }
-
-    func enqueue(_ block: @escaping () -> Void) {
-        self.queue.async { block() }
     }
 }

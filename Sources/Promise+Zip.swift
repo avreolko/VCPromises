@@ -3,9 +3,7 @@ import Foundation
 extension Promise {
 
     @discardableResult
-    public func zip<Other>(with other: Promise<Other>, on queue: DispatchQueue? = nil) -> Promise<(Value, Other)> {
-
-        let queue = queue ?? self.queue
+    public func zip<Other>(with other: Promise<Other>, on queue: DispatchQueue = .main) -> Promise<(Value, Other)> {
 
         let work: Promise<(Value, Other)>.Work = { (fulfill, reject) in
 
@@ -23,13 +21,11 @@ extension Promise {
             }
         }
 
-        return Promise<(Value, Other)>(work, on: queue)
+        return Promise<(Value, Other)>(work)
     }
 
     @discardableResult
-    public func zip<Second, Third>(with second: Promise<Second>, and third: Promise<Third>, on queue: DispatchQueue? = nil) -> Promise<(Value, Second, Third)> {
-
-        let queue = queue ?? self.queue
+    public func zip<Second, Third>(with second: Promise<Second>, and third: Promise<Third>, on queue: DispatchQueue = .main) -> Promise<(Value, Second, Third)> {
 
         let work: Promise<(Value, Second, Third)>.Work = { (fulfill, reject) in
             let group = DispatchGroup()
@@ -48,7 +44,7 @@ extension Promise {
             }
         }
 
-        return Promise<(Value, Second, Third)>(work, on: queue)
+        return Promise<(Value, Second, Third)>(work)
     }
 }
 

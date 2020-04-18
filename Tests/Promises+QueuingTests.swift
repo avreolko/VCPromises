@@ -10,18 +10,16 @@ final class PromisesQueuingTests: XCTestCase {
         let secondQueue = DispatchQueue(label: "second")
         let thirdQueue = DispatchQueue(label: "third")
 
-        let promise = Promise<Int>(queue: firstQueue)
+        let promise = Promise<Int>()
         promise.fulfill(1)
 
         let expectation = self.expectation(description: "waiting for promise with multiple queue switches")
         expectation.expectedFulfillmentCount = 3
 
         promise
-            .finally { XCTAssertEqual(currentQueueLabel, "first"); expectation.fulfill() }
-            .thenMap(on: secondQueue) { $0 }
-            .finally { XCTAssertEqual(currentQueueLabel, "second"); expectation.fulfill() }
-            .thenMap(on: thirdQueue) { $0 }
-            .finally { XCTAssertEqual(currentQueueLabel, "third"); expectation.fulfill() }
+            .finally(on: firstQueue) { XCTAssertEqual(currentQueueLabel, "first"); expectation.fulfill() }
+            .finally(on: secondQueue) { XCTAssertEqual(currentQueueLabel, "second"); expectation.fulfill() }
+            .finally(on: thirdQueue) { XCTAssertEqual(currentQueueLabel, "third"); expectation.fulfill() }
 
         waitForExpectations(timeout: 0.1, handler: nil)
     }
@@ -29,18 +27,16 @@ final class PromisesQueuingTests: XCTestCase {
     func test_single_queue() {
         let queue = DispatchQueue(label: "someQueue")
 
-        let promise = Promise<Int>(queue: queue)
+        let promise = Promise<Int>()
         promise.fulfill(1)
 
         let expectation = self.expectation(description: "waiting for promise with single queue")
         expectation.expectedFulfillmentCount = 3
 
         promise
-            .finally { XCTAssertEqual(currentQueueLabel, "someQueue"); expectation.fulfill() }
-            .thenMap { $0 }
-            .finally { XCTAssertEqual(currentQueueLabel, "someQueue"); expectation.fulfill() }
-            .thenMap { $0 }
-            .finally { XCTAssertEqual(currentQueueLabel, "someQueue"); expectation.fulfill() }
+            .finally(on: queue) { XCTAssertEqual(currentQueueLabel, "someQueue"); expectation.fulfill() }
+            .finally(on: queue) { XCTAssertEqual(currentQueueLabel, "someQueue"); expectation.fulfill() }
+            .finally(on: queue) { XCTAssertEqual(currentQueueLabel, "someQueue"); expectation.fulfill() }
 
         waitForExpectations(timeout: 0.1, handler: nil)
     }
@@ -85,8 +81,8 @@ final class PromisesQueuingTests: XCTestCase {
         let third = Promise(work, on: workQueue)
 
         promise
-            .zip(with: second, and: third, on: notifyQueue)
-            .then { values in
+            .zip(with: second, and: third)
+            .then(on: notifyQueue) { values in
                 let (firstArr, secondArr, thirdArr) = values
                 XCTAssertEqual(firstArr, secondArr)
                 XCTAssertEqual(secondArr, thirdArr)
