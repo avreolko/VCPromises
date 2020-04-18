@@ -92,6 +92,40 @@ final class PromisesQueuingTests: XCTestCase {
 
         waitForExpectations(timeout: 0.2, handler: nil)
     }
+
+    func test_zip_concurrency() {
+
+        let expectation = self.expectation(description: "waiting for promise with single queue")
+        expectation.expectedFulfillmentCount = 1
+
+        let workQueue = DispatchQueue(label: "work.queue", attributes: .concurrent)
+        let notifyQueue = DispatchQueue(label: "notify.queue", attributes: .concurrent)
+
+        let makePromise: (Int) -> Promise<Int> = { value in
+            let work: Promise<Int>.Work = { fulfill, _ in
+                workQueue.asyncAfter(deadline: .now() + 0.5, execute: { fulfill(value) })
+                XCTAssertEqual(currentQueueLabel, "work.queue")
+            }
+            return Promise(work, on: workQueue)
+        }
+
+        makePromise(1).zip(
+            with: makePromise(2),
+            and: makePromise(3),
+            and: makePromise(4),
+            and: makePromise(5)
+        ).then(on: notifyQueue) { values in
+            XCTAssertEqual(values.0, 1)
+            XCTAssertEqual(values.1, 2)
+            XCTAssertEqual(values.2, 3)
+            XCTAssertEqual(values.3, 4)
+            XCTAssertEqual(values.4, 5)
+            expectation.fulfill()
+            XCTAssertEqual(currentQueueLabel, "notify.queue")
+        }
+
+        waitForExpectations(timeout: 0.6, handler: nil)
+    }
 }
 
 internal var currentQueueLabel: String? {

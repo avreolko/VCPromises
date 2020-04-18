@@ -4,6 +4,7 @@ public typealias Success<T> = (T) -> Void
 public typealias Failure = (Error) -> Void
 
 struct Callback<Value> {
+
     private let fulfill: Success<Value>
     private let reject: Failure
     private let queue: DispatchQueue
@@ -85,6 +86,16 @@ public class Promise<Value> {
         case .rejected(let error):
             callback.reject(with: error)
         }
+    }
+}
+
+internal extension Promise {
+    var value: Value? {
+        guard case .fulfilled(let value) = self.state else {
+            return nil
+        }
+
+        return value
     }
 }
 

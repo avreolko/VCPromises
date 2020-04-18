@@ -10,7 +10,7 @@ final class PromiseFlattenTests: XCTestCase {
         let expectation = self.expectation(description: "waiting for promise")
         expectation.expectedFulfillmentCount = worksCount + 1
 
-        let range = (0..<10000)
+        let range = (0..<25000)
         let unsortedArray = range.map { _ in Int.random(in: range) }
 
         let makePromise: (Int) -> Promise<[Int]> = { number in
@@ -34,7 +34,7 @@ final class PromiseFlattenTests: XCTestCase {
             }
         }
 
-        waitForExpectations(timeout: 5, handler: nil)
+        waitForExpectations(timeout: 1, handler: nil)
     }
 }
 

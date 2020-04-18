@@ -43,8 +43,7 @@ extension Promise {
 
     @discardableResult
     public func then(on queue: DispatchQueue = .main, _ fullfill: @escaping (Value) -> Void) -> Promise<Value> {
-        self.addCallbacks(fullfill, { _ in }, queue)
-        return self
+        return self.then(on: queue, fullfill, { _ in })
     }
 
     @discardableResult
