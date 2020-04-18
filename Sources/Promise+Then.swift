@@ -6,30 +6,43 @@
 //  Copyright © 2020 Valentin Cherepyanko. All rights reserved.
 //
 
-extension Promise {
-    @discardableResult
-    public func thenFlatMap<NewValue>(_ onFulfill:@escaping (Value) throws -> Promise<NewValue>) -> Promise<NewValue> {
+import Foundation
 
-        return Promise<NewValue>(work: { fulfill, reject in
-            self.addCallbacks({ value in
+extension Promise {
+
+    @discardableResult
+    public func thenFlatMap<NewValue>(on queue: DispatchQueue? = nil, _ onFulfill: @escaping (Value) throws -> Promise<NewValue>) -> Promise<NewValue> {
+
+        let queue = queue ?? self.queue
+
+        let work: Promise<NewValue>.Work = { fulfill, reject in
+
+            let newFulfill: Success<Value> = { value in
                 do {
                     try onFulfill(value).then(fulfill, reject)
                 } catch let error {
                     reject(error)
                 }
-            }, reject)
-        })
+            }
+
+            self.addCallbacks(newFulfill, reject)
+        }
+
+        return Promise<NewValue>(work, on: queue)
     }
 
     @discardableResult
-    public func thenMap<NewValue>(_ onFullfill: @escaping (Value) throws -> NewValue) -> Promise<NewValue> {
-        return self.thenFlatMap { (value) -> Promise<NewValue> in
+    public func thenMap<NewValue>(on queue: DispatchQueue? = nil, _ onFullfill: @escaping (Value) throws -> NewValue) -> Promise<NewValue> {
+
+        let queue = queue ?? self.queue
+
+        return self.thenFlatMap(on: queue, { (value) -> Promise<NewValue> in
             do {
-                return Promise<NewValue>(value: try onFullfill(value))
+                return Promise<NewValue>(value: try onFullfill(value), queue: queue)
             } catch let error {
-                return Promise<NewValue>(error: error)
+                return Promise<NewValue>(error: error, queue: queue)
             }
-        }
+        })
     }
 
     @discardableResult
