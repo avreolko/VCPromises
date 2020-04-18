@@ -197,4 +197,36 @@ final class PromiseZipTests: XCTestCase {
 
         waitForExpectations(timeout: 0.1, handler: nil)
     }
+
+    func test_nested_zips() {
+
+        let makePromise: (Int) -> Promise<Int> = {
+            let promise = Promise<Int>()
+            promise.fulfill($0)
+            return promise
+        }
+
+        let nested1 = makePromise(2).zip(
+            with: makePromise(3),
+            and: makePromise(4)
+        )
+
+        let nested2 = makePromise(5).zip(
+            with: makePromise(6),
+            and: makePromise(7)
+        )
+
+        makePromise(1)
+            .zip(with: nested1, and: nested2)
+            .then { values in
+                let (v1, (v2, v3, v4), (v5, v6, v7)) = values
+                XCTAssertEqual(v1, 1)
+                XCTAssertEqual(v2, 2)
+                XCTAssertEqual(v3, 3)
+                XCTAssertEqual(v4, 4)
+                XCTAssertEqual(v5, 5)
+                XCTAssertEqual(v6, 6)
+                XCTAssertEqual(v7, 7)
+            }
+    }
 }

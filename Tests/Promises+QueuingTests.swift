@@ -72,7 +72,7 @@ final class PromisesQueuingTests: XCTestCase {
         waitForExpectations(timeout: 0.1, handler: nil)
     }
 
-    func test_some_hard_work() {
+    func test_some_hard_work_on_background_thread_and_zipping_in_another() {
 
         let expectation = self.expectation(description: "waiting for promise with single queue")
         expectation.expectedFulfillmentCount = 4
