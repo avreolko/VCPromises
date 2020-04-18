@@ -50,7 +50,7 @@ extension Promise {
             group.append(third, fulfill: { thirdValue = $0 }, reject: reject)
 
             group.notify(queue: queue) {
-                guard let first = firstValue, let second = secondValue, let third = thirdValue else { return assertionFailure() }
+                guard let first = firstValue, let second = secondValue, let third = thirdValue else { return }
                 fulfill((first, second, third))
             }
         }
