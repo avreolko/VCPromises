@@ -6,8 +6,6 @@
 //  Copyright © 2020 Valentin Cherepyanko. All rights reserved.
 //
 
-import Foundation
-
 extension Promise {
     @discardableResult
     public func thenFlatMap<NewValue>(_ onFulfill:@escaping (Value) throws -> Promise<NewValue>) -> Promise<NewValue> {
