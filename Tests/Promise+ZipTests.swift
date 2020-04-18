@@ -168,4 +168,33 @@ final class PromiseZipTests: XCTestCase {
 
         waitForExpectations(timeout: 0.1, handler: nil)
     }
+
+    func test_zip_underlying_reject_interaction() {
+        let expectation = self.expectation(description: "waiting for promise that not yet fulfilled")
+        expectation.expectedFulfillmentCount = 3
+
+        let first = Promise<Int>().then { _ in expectation.fulfill() }
+        let second = Promise<Int>().catch { _ in expectation.fulfill() }
+
+        first.fulfill(1)
+        second.reject(SomeError.foo)
+
+        first.zip(with: second).catch { _ in expectation.fulfill() }
+
+        waitForExpectations(timeout: 0.1, handler: nil)
+    }
+
+    func test_zip_multiple_errors() {
+        let expectation = self.expectation(description: "waiting for promise that not yet fulfilled")
+
+        let first = Promise<Int>()
+        let second = Promise<Int>()
+
+        first.reject(SomeError.bar)
+        second.reject(SomeError.foo)
+
+        first.zip(with: second).catch { _ in expectation.fulfill() }
+
+        waitForExpectations(timeout: 0.1, handler: nil)
+    }
 }
