@@ -1,5 +1,5 @@
 //
-//  VCPromisesTests.swift
+//  PromiseCatchTests.swift
 //  VCPromisesTests
 //
 //  Created by Valentin Cherepyanko on 16.01.2020.

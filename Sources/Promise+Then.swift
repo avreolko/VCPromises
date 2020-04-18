@@ -47,6 +47,11 @@ extension Promise {
 
     @discardableResult
     public func `catch`(_ reject: @escaping (Error) -> Void) -> Promise<Value> {
-        return self.then ({ _ in }, reject)
+        return self.then({ _ in }, reject)
+    }
+
+    @discardableResult
+    public func finally(_ block: @escaping () -> Void ) -> Promise<Value> {
+        return self.then({ _ in block() }, { _ in block() })
     }
 }
