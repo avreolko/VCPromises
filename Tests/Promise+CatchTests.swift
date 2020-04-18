@@ -1,11 +1,3 @@
-//
-//  PromiseCatchTests.swift
-//  VCPromisesTests
-//
-//  Created by Valentin Cherepyanko on 16.01.2020.
-//  Copyright © 2020 Valentin Cherepyanko. All rights reserved.
-//
-
 import XCTest
 @testable import VCPromises
 

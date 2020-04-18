@@ -1,10 +1,3 @@
-//
-//  Promise+Zip.swift
-//  
-//
-//  Created by Черепянко Валентин Александрович on 18/04/2020.
-//
-
 import Foundation
 
 extension Promise {

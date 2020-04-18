@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Черепянко Валентин Александрович on 18/04/2020.
-//
-
 import Foundation
 
 public func flatten<T>(_ promises: [Promise<T>], on queue: DispatchQueue = .main) -> Promise<[T]> {

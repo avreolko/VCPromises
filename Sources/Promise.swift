@@ -1,11 +1,3 @@
-//
-//  Promise.swift
-//  VCNetworking
-//
-//  Created by Valentin Cherepyanko on 06.01.2020.
-//  Copyright © 2020 Valentin Cherepyanko. All rights reserved.
-//
-
 import Foundation
 
 public typealias Success<T> = (T) -> Void
@@ -17,6 +9,8 @@ struct Callback<Value> {
 }
 
 public class Promise<Value> {
+
+    public typealias Work = (_ fulfill: @escaping Success<Value>, _ reject: @escaping Failure) throws -> Void
 
     enum State<Value> {
         case pending([Callback<Value>])
@@ -43,7 +37,6 @@ public class Promise<Value> {
         self.queue = queue
     }
 
-    public typealias Work = (_ fulfill: @escaping Success<Value>, _ reject: @escaping Failure) throws -> Void
     public convenience init(_ work: @escaping Work, on queue: DispatchQueue = .main) {
 
         self.init(queue: queue)
