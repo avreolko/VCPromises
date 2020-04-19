@@ -3,8 +3,8 @@ import Foundation
 extension Promise {
 
     @discardableResult
-    public func thenFlatMap<NewValue>(on queue: DispatchQueue = .main,
-                                      _ map: @escaping (Value) throws -> Promise<NewValue>) -> Promise<NewValue> {
+    public func then<NewValue>(on queue: DispatchQueue = .main,
+                               _ map: @escaping (Value) throws -> Promise<NewValue>) -> Promise<NewValue> {
 
         let work: Promise<NewValue>.Work = { fulfill, reject in
 
@@ -26,7 +26,7 @@ extension Promise {
     public func thenMap<NewValue>(on queue: DispatchQueue = .main,
                                   _ map: @escaping (Value) throws -> NewValue) -> Promise<NewValue> {
 
-        return self.thenFlatMap(on: queue, { (value) -> Promise<NewValue> in
+        return self.then(on: queue, { (value) -> Promise<NewValue> in
             do {
                 return Promise<NewValue>(value: try map(value))
             } catch let error {

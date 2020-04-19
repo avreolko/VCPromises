@@ -22,7 +22,7 @@ final class PromiseMapTests: XCTestCase {
     func test_flat_map() {
         let somePromise = Promise<Int>()
 
-        let otherPromise: Promise<String> = somePromise.thenFlatMap { int in
+        let otherPromise: Promise<String> = somePromise.then { int in
             let promise = Promise<String>()
             promise.fulfill(String(int))
             return promise
