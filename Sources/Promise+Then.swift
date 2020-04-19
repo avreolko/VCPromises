@@ -49,11 +49,6 @@ extension Promise {
     }
 
     @discardableResult
-    public func `catch`(on queue: DispatchQueue = .main, _ reject: @escaping (Error) -> Void) -> Promise<Value> {
-        return self.then(on: queue, { _ in }, reject)
-    }
-
-    @discardableResult
     public func finally(on queue: DispatchQueue = .main, _ block: @escaping () -> Void) -> Promise<Value> {
         return self.then(on: queue, { _ in block() }, { _ in block() })
     }
