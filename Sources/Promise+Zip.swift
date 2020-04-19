@@ -3,7 +3,8 @@ import Foundation
 extension Promise {
 
     @discardableResult
-    public func zip<U>(with other: Promise<U>, on queue: DispatchQueue = .main) -> Promise<(Value, U)> {
+    public func zip<U>(with other: Promise<U>,
+                       on queue: DispatchQueue = .main) -> Promise<(Value, U)> {
 
         let work: Promise<(Value, U)>.Work = { (fulfill, reject) in
 
@@ -20,7 +21,9 @@ extension Promise {
     }
 
     @discardableResult
-    public func zip<T1, T2>(with second: Promise<T1>, and third: Promise<T2>, on queue: DispatchQueue = .main) -> Promise<(Value, T1, T2)> {
+    public func zip<T1, T2>(with second: Promise<T1>,
+                            and third: Promise<T2>,
+                            on queue: DispatchQueue = .main) -> Promise<(Value, T1, T2)> {
 
         let work: Promise<(Value, T1, T2)>.Work = { (fulfill, reject) in
             self.zip(with: second, on: queue)

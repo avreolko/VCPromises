@@ -3,13 +3,14 @@ import Foundation
 extension Promise {
 
     @discardableResult
-    public func thenFlatMap<NewValue>(on queue: DispatchQueue = .main, _ onFulfill: @escaping (Value) throws -> Promise<NewValue>) -> Promise<NewValue> {
+    public func thenFlatMap<NewValue>(on queue: DispatchQueue = .main,
+                                      _ map: @escaping (Value) throws -> Promise<NewValue>) -> Promise<NewValue> {
 
         let work: Promise<NewValue>.Work = { fulfill, reject in
 
             let newFulfill: Success<Value> = { value in
                 do {
-                    try onFulfill(value).then(fulfill, reject)
+                    try map(value).then(on: queue, fulfill, reject)
                 } catch let error {
                     reject(error)
                 }
@@ -22,11 +23,12 @@ extension Promise {
     }
 
     @discardableResult
-    public func thenMap<NewValue>(on queue: DispatchQueue = .main, _ onFullfill: @escaping (Value) throws -> NewValue) -> Promise<NewValue> {
+    public func thenMap<NewValue>(on queue: DispatchQueue = .main,
+                                  _ map: @escaping (Value) throws -> NewValue) -> Promise<NewValue> {
 
         return self.thenFlatMap(on: queue, { (value) -> Promise<NewValue> in
             do {
-                return Promise<NewValue>(value: try onFullfill(value))
+                return Promise<NewValue>(value: try map(value))
             } catch let error {
                 return Promise<NewValue>(error: error)
             }
@@ -35,15 +37,15 @@ extension Promise {
 
     @discardableResult
     public func then(on queue: DispatchQueue = .main,
-                     _ fullfill: @escaping (Value) -> Void,
+                     _ fulfill: @escaping (Value) -> Void,
                      _ reject: @escaping (Error) -> Void = { _ in }) -> Promise<Value> {
-        self.addCallbacks(fullfill, reject, queue)
+        self.addCallbacks(fulfill, reject, queue)
         return self
     }
 
     @discardableResult
-    public func then(on queue: DispatchQueue = .main, _ fullfill: @escaping (Value) -> Void) -> Promise<Value> {
-        return self.then(on: queue, fullfill, { _ in })
+    public func then(on queue: DispatchQueue = .main, _ fulfill: @escaping (Value) -> Void) -> Promise<Value> {
+        return self.then(on: queue, fulfill, { _ in })
     }
 
     @discardableResult
