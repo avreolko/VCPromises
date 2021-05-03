@@ -62,3 +62,6 @@ promise
 
 ## Usage
 See `/Tests` for usage examples
+
+## License
+This project is released under the [MIT license](https://en.wikipedia.org/wiki/MIT_License).
