@@ -1,3 +1,5 @@
+[![Tests](https://github.com/avreolko/VCPromises/workflows/Tests/badge.svg?branch=master)](https://github.com/avreolko/VCPromises/actions/workflows/tests.yml)
+
 # VCPromises
 A basic implementation of the Promise pattern in Swift
 
