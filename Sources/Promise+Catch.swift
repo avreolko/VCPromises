@@ -1,6 +1,7 @@
 import Foundation
 
 extension Promise {
+
     @discardableResult
     public func `catch`(on queue: DispatchQueue = .main, _ reject: @escaping (Error) -> Void) -> Promise<Value> {
         return self.then(on: queue, { _ in }, reject)

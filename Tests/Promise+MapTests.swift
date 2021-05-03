@@ -16,7 +16,7 @@ final class PromiseMapTests: XCTestCase {
 
         intPromise.fulfill(10)
 
-        waitForExpectations(timeout: 0.2, handler: nil)
+        waitForExpectations(timeout: 1.0, handler: nil)
     }
 
     func test_flat_map() {
@@ -36,6 +36,6 @@ final class PromiseMapTests: XCTestCase {
 
         somePromise.fulfill(8)
 
-        waitForExpectations(timeout: 0.1, handler: nil)
+        waitForExpectations(timeout: 1.0, handler: nil)
     }
 }

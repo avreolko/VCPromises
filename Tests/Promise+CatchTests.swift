@@ -54,9 +54,9 @@ final class PromiseCatchTests: XCTestCase {
             fulfill(try someWork())
         }
 
-        Promise(work, on: .global(qos: .userInitiated))
-            .then(on: .main) { XCTFail() }
-            .catch { _ in expectation.fulfill() }
+        Promise(work, on: .main)
+            .then { XCTFail() }
+            .catch(on: .main) { _ in expectation.fulfill() }
 
         waitForExpectations(timeout: 0.1, handler: nil)
     }
