@@ -36,14 +36,19 @@ extension Promise {
     public func `catch`<ErrorType>(_ as: ErrorType.Type,
                                    on queue: DispatchQueue = .main,
                                    _ reject:  @escaping (ErrorType) -> Void) -> Promise<Value> {
-        return self.catch { ($0 as? ErrorType).map { reject($0) } }
+        return self.catch(on: queue) { ($0 as? ErrorType).map { reject($0) } }
     }
 
     @discardableResult
     public func `catch`<ErrorType: Equatable>(_ error: ErrorType,
                                               on queue: DispatchQueue = .main,
                                               _ reject:  @escaping () -> Void) -> Promise<Value> {
-        return self.catch { if error == ($0 as? ErrorType) { reject() } }
+        return self.catch(on: queue) { if error == ($0 as? ErrorType) { reject() } }
+    }
+
+    @discardableResult
+    public func whenError(on queue: DispatchQueue = .main, _ reject: @escaping () -> Void) -> Promise<Value> {
+        return self.catch(on: queue) { _ in reject() }
     }
 }
 
