@@ -26,9 +26,9 @@
 import XCTest
 @testable import VCPromises
 
-final class PromiseThenTests: XCTestCase {
+enum SomeError: Error { case foo, bar }
 
-    enum SomeError: Error { case foo, bar }
+final class PromiseThenTests: XCTestCase {
 
     func test_multiple_thens() {
         let promise = Promise<Void>()

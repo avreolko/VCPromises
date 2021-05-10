@@ -28,8 +28,6 @@ import XCTest
 
 final class PromiseZipTests: XCTestCase {
 
-    enum SomeError: Error { case foo, bar }
-
     func test_two_zip_success() {
 
         let p1 = Promise<Int>()

@@ -28,8 +28,6 @@ import XCTest
 
 final class PromiseFinallyTests: XCTestCase {
 
-    enum SomeError: Error { case foo, bar }
-
     func test_success_finally() {
         let expectation = self.expectation(description: "waiting for promise with final callback")
         Promise<Int>().finally { expectation.fulfill() }.fulfill(1)
@@ -76,12 +74,13 @@ final class PromiseFinallyTests: XCTestCase {
         let promise = Promise<Int>()
 
         let expectation = self.expectation(description: "waiting for promise with final callback")
-        expectation.expectedFulfillmentCount = 2
+        expectation.expectedFulfillmentCount = 3
 
         promise
             .finally { expectation.fulfill() }
             .thenMap { String($0) }
             .finally { expectation.fulfill() }
+            .then { XCTAssert($0 == "1"); expectation.fulfill() }
 
         promise.fulfill(1)
 

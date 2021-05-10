@@ -28,8 +28,10 @@ import Foundation
 extension Promise {
 
     @discardableResult
-    public func then<NewValue>(on queue: DispatchQueue = .main,
-                               _ map: @escaping (Value) throws -> Promise<NewValue>) -> Promise<NewValue> {
+    public func then<NewValue>(
+        on queue: DispatchQueue = .main,
+        _ map: @escaping (Value) throws -> Promise<NewValue>
+    ) -> Promise<NewValue> {
 
         let work: Promise<NewValue>.Work = { fulfill, reject in
 
@@ -48,8 +50,10 @@ extension Promise {
     }
 
     @discardableResult
-    public func thenMap<NewValue>(on queue: DispatchQueue = .main,
-                                  _ map: @escaping (Value) throws -> NewValue) -> Promise<NewValue> {
+    public func thenMap<NewValue>(
+        on queue: DispatchQueue = .main,
+        _ map: @escaping (Value) throws -> NewValue
+    ) -> Promise<NewValue> {
 
         return self.then(on: queue, { (value) -> Promise<NewValue> in
             do {

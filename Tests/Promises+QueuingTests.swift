@@ -28,8 +28,6 @@ import XCTest
 
 final class PromisesQueuingTests: XCTestCase {
 
-    enum SomeError: Error { case foo, bar }
-
     func test_queue_switching() {
         let firstQueue = DispatchQueue(label: "first")
         let secondQueue = DispatchQueue(label: "second")

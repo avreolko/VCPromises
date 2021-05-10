@@ -28,8 +28,6 @@ import XCTest
 
 final class PromiseCatchTests: XCTestCase {
 
-    enum SomeError: Error { case foo, bar }
-
     enum ComplexError: Error, Equatable {
 
         enum Reason {
