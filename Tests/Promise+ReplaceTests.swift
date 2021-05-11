@@ -98,4 +98,21 @@ final class PromiseReplaceTests: XCTestCase {
 
         waitForExpectations(timeout: 1.0, handler: nil)
     }
+
+    func test_replace_fail() {
+
+        let expectation = self.expectation(description: "waiting for promise with flat map")
+
+        let somePromise = Promise<Int>()
+        let otherPromise: Promise<Int> = somePromise.replaceFail { Promise(value: 1) }
+
+        otherPromise.then { value in
+            XCTAssertEqual(value, 1)
+            expectation.fulfill()
+        }
+
+        somePromise.reject(SomeError.bar)
+
+        waitForExpectations(timeout: 1.0, handler: nil)
+    }
 }

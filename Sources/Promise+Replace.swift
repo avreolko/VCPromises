@@ -49,4 +49,26 @@ extension Promise {
 
         return Promise<Value>(work)
     }
+
+    @discardableResult
+    public func replaceFail(
+        on queue: DispatchQueue = .main,
+        _ replace: @escaping () throws -> Promise<Value>
+    ) -> Promise<Value> {
+
+        let work: Promise<Value>.Work = { fulfill, reject in
+
+            let newReject: Failure = { _ in
+                do {
+                    try replace().then(on: queue, fulfill, reject)
+                } catch let error {
+                    reject(error)
+                }
+            }
+
+            self.addCallbacks(fulfill, newReject, queue)
+        }
+
+        return Promise<Value>(work)
+    }
 }
