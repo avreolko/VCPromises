@@ -54,6 +54,8 @@ struct Callback<Value> {
 
 public class Promise<Value> {
 
+    private let stateLock = NSRecursiveLock()
+
     public typealias Work = (_ fulfill: @escaping Success<Value>, _ reject: @escaping Failure) throws -> Void
 
     enum State<Value> {
@@ -103,6 +105,8 @@ public class Promise<Value> {
 
         let callback = Callback(fulfill: fulfill, reject: reject, queue: queue)
 
+        self.stateLock.lock()
+
         switch self.state {
         case .pending(let callbacks):
             self.state = .pending(callbacks + [callback])
@@ -111,6 +115,8 @@ public class Promise<Value> {
         case .rejected(let error):
             callback.reject(with: error)
         }
+
+        self.stateLock.unlock()
     }
 }
 
@@ -128,9 +134,12 @@ private extension Promise {
 
     func updateState(_ newState: State<Value>) {
 
-        guard case .pending(let callbacks) = self.state else { return }
+        self.stateLock.lock()
 
+        guard case .pending(let callbacks) = self.state else { return }
         self.state = newState
+
+        self.stateLock.unlock()
 
         switch newState {
         case .pending: break
