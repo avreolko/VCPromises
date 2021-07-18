@@ -118,6 +118,23 @@ final class PromisesQueuingTests: XCTestCase {
         waitForExpectations(timeout: 0.2, handler: nil)
     }
 
+    func test_finally_concurrent_resolution() {
+
+        let queue = DispatchQueue.global(qos: .utility)
+        let promise = Promise<Int>()
+
+        let expectation = self.expectation(description: "waiting for promise with single queue")
+        expectation.expectedFulfillmentCount = 100
+
+        for _ in (0..<100) {
+            queue.async { promise.finally { expectation.fulfill() } }
+        }
+
+        queue.async { promise.fulfill(1) }
+
+        waitForExpectations(timeout: 0.1)
+    }
+
     func test_zip_concurrency() {
 
         let expectation = self.expectation(description: "waiting for promise with single queue")
