@@ -149,6 +149,37 @@ final class PromisesQueuingTests: XCTestCase {
 
         waitForExpectations(timeout: 0.6, handler: nil)
     }
+
+    func test_finally_on_different_queues() {
+        let firstQueue = DispatchQueue(label: "first")
+        let secondQueue = DispatchQueue(label: "second")
+        let thirdQueue = DispatchQueue(label: "third")
+
+        let promise = Promise<Int>()
+
+        DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + .milliseconds(1)) {
+            promise.fulfill(1)
+        }
+
+        let expectation = self.expectation(description: "waiting for promise with multiple queue switches")
+        expectation.expectedFulfillmentCount = 3
+
+        firstQueue.async {
+            promise
+                .finally(on: firstQueue) { XCTAssertEqual(currentQueueLabel, "first"); expectation.fulfill() }
+        }
+        secondQueue.async {
+            promise
+                .finally(on: secondQueue) { XCTAssertEqual(currentQueueLabel, "second"); expectation.fulfill() }
+        }
+        thirdQueue.async {
+            promise
+                .finally(on: thirdQueue) { XCTAssertEqual(currentQueueLabel, "third"); expectation.fulfill() }
+        }
+
+        waitForExpectations(timeout: 0.1, handler: nil)
+    }
+
 }
 
 internal var currentQueueLabel: String? {
